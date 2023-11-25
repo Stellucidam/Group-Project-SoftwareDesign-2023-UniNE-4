@@ -105,4 +105,14 @@ while running:
     # Réguler la vitesse de la boucle
     clock.tick(FPS)
 
-# Reste du code...
+def set_difficulty(
+):  # function to progressively increase the speed of the background movement
+  global score
+  global background_speed
+  speed_modification = score // 3
+  background_speed = 3 + speed_modification
+
+pygame.mouse.set_visible(False)
+
+pygame.quit()
+sys.exit()
