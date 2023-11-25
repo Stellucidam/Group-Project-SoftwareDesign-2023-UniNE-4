@@ -14,6 +14,10 @@ BROWN = (165, 42, 42)
 WINDOWWIDTH = 744
 WINDOWHEIGHT = 420
 FPS = 30
+
+# Constantes
+JUMP_SIZE = 7
+
 windowsurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption("Run Greta, RUN")
 
@@ -42,9 +46,11 @@ Greta = pygame.image.load("Greta.png")
 Greta = pygame.transform.scale(Greta, (200, 200))
 greta_rect = Greta.get_rect()
 greta_rect.center = (70, 20)
+
 # Variables du saut
 jumping = False
-jump_count = 10
+double_jump_available = True
+jump_count = JUMP_SIZE
 # Gravité
 gravity = 1
 
@@ -57,8 +63,12 @@ while running:
             running = False
         # running
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and not jumping:
-                jumping = True
+            if event.key == pygame.K_SPACE:
+                if not jumping:
+                    jumping = True
+                elif double_jump_available:
+                    double_jump_available = False
+                    jump_count = JUMP_SIZE
 
     # Défilement de l'image de fond
     background_x -= 1
@@ -74,7 +84,7 @@ while running:
 
     # Gestion du saut
     if jumping:
-        if jump_count >= -10:
+        if jump_count >= JUMP_SIZE * -1:
             neg = 1
             if jump_count < 0:
                 neg = -1
@@ -82,13 +92,14 @@ while running:
             jump_count -= 1
         else:
             jumping = False
-            jump_count = 10
+            jump_count = JUMP_SIZE
 
     # Appliquer la gravité
     if greta_rect.y < WINDOWHEIGHT - 170:
         greta_rect.y += gravity
     else:
         greta_rect.y = WINDOWHEIGHT - 170
+        double_jump_available = True  # Reset double jump availability
 
     # Afficher Trump
     windowsurface.blit(Trump, trump_rect)
