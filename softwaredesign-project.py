@@ -1,15 +1,14 @@
 import pygame
 import sys
-from PIL import Image, ImageDraw
 
-# Initialisation de Pygame
+# Initialize Pygame
 pygame.init()
 
 # Définition des couleurs
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-BRAWN = (165, 42, 42)
+BROWN = (165, 42, 42)
 
 # Format de la fenêtre
 WINDOWWIDTH = 744
@@ -18,41 +17,6 @@ FPS = 30
 windowsurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption("Run Greta, RUN")
 
-######################
-#accueil
-
-# Charger l'image de fond
-#fond = pygame.image.load("fond.png")
-#fond = pygame.transform.scale(fond, (largeur, hauteur))
-
-# Charger l'image du bouton "Start"
-#bouton_start = pygame.image.load("chemin/vers/votre/bouton_start.png")
-#bouton_start_rect = bouton_start.get_rect()
-#bouton_start_rect.x = (largeur - bouton_start_rect.width) // 2
-#bouton_start_rect.y = hauteur // 2
-
-# Boucle principale de la page d'accueil
-#while True:
-#for event in pygame.event.get():
-#if event.type == pygame.QUIT:
-#pygame.quit()
-#sys.exit()
-#elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-# Vérifier si le bouton "Start" a été cliqué
-#if bouton_start_rect.collidepoint(event.pos):
-# Lancer le jeu ici (remplacez cela par le code de votre jeu)
-#print("Le jeu est lancé !")
-
-# Afficher l'image de fond
-#fenetre.blit(fond, (0, 0))
-
-# Afficher le bouton "Start"
-#fenetre.blit(bouton_start, bouton_start_rect.topleft)
-
-# Mettre à jour l'affichage
-#pygame.display.flip()
-##########################################
-
 # Chargement de l'image de fond
 background = pygame.image.load("fond.png")
 background_x = 0
@@ -60,14 +24,12 @@ background_x = 0
 # Score initial
 score = 0
 
-
 # Fonction pour afficher le score
 def afficher_score():
-  font = pygame.font.Font(None, 36)  # Police et taille du texte
-  texte_score = font.render("Score : {}".format(score), True, WHITE)
-  text_rect = texte_score.get_rect(center=(WINDOWWIDTH // 2, 20))
-  windowsurface.blit(texte_score, (10, 10))  # Position du texte à l'écran
-
+    font = pygame.font.Font(None, 36)  # Police et taille du texte
+    texte_score = font.render("Score : {}".format(score), True, WHITE)
+    text_rect = texte_score.get_rect(center=(WINDOWWIDTH // 2, 20))
+    windowsurface.blit(texte_score, (10, 10))  # Position du texte à l'écran
 
 # Afficher Trump
 Trump = pygame.image.load("trump.png")
@@ -75,7 +37,7 @@ Trump = pygame.transform.scale(Trump, (200, 150))
 trump_rect = Trump.get_rect()
 trump_rect.topright = (WINDOWWIDTH - 50, 10)
 
-#Afficher Greta
+# Afficher Greta
 Greta = pygame.image.load("Greta.png")
 Greta = pygame.transform.scale(Greta, (200, 200))
 greta_rect = Greta.get_rect()
@@ -90,74 +52,57 @@ gravity = 1
 clock = pygame.time.Clock()
 running = True
 while running:
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-      running = False
-    #running
-    elif event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_SPACE and not jumping:
-        jumping = True
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        # running
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and not jumping:
+                jumping = True
 
-  # Défilement de l'image de fond
-  background_x -= 1
-  if background_x < -background.get_width():
-    background_x = 0
+    # Défilement de l'image de fond
+    background_x -= 1
+    if background_x < -background.get_width():
+        background_x = 0
 
-  #Afficher Trump
-  windowsurface.blit(Trump, trump_rect)
-  pygame.display.flip()
+    # Effacer l'écran
+    windowsurface.fill(BLACK)
 
-  #Afficher Greta
-  windowsurface.blit(Greta, greta_rect)
-  pygame.display.flip()
+    # Dessiner nl'image de fond
+    windowsurface.blit(background, (background_x, 0))
+    windowsurface.blit(background, (background_x + background.get_width(), 0))
 
-  # Gestion du saut
-  if jumping:
-    if jump_count >= -10:
-      neg = 1
-      if jump_count < 0:
-        neg = -1
-      greta_rect.y -= (jump_count**2) * 0.5 * neg
-      jump_count -= 1
+    # Gestion du saut
+    if jumping:
+        if jump_count >= -10:
+            neg = 1
+            if jump_count < 0:
+                neg = -1
+            greta_rect.y -= (jump_count**2) * 0.5 * neg
+            jump_count -= 1
+        else:
+            jumping = False
+            jump_count = 10
+
+    # Appliquer la gravité
+    if greta_rect.y < WINDOWHEIGHT - 170:
+        greta_rect.y += gravity
     else:
-      jumping = False
-      jump_count = 10
+        greta_rect.y = WINDOWHEIGHT - 170
 
-  # Appliquer la gravité
-  if greta_rect.y < WINDOWHEIGHT - 50:
-    greta_rect.y += gravity
-  else:
-    greta_rect.y = WINDOWHEIGHT - 50
+    # Afficher Trump
+    windowsurface.blit(Trump, trump_rect)
 
-  # Effacer l'écran
-  windowsurface.fill(BLACK)
+    # Afficher Greta
+    windowsurface.blit(Greta, greta_rect)
 
-  # Dessiner nl'image de fond
-  windowsurface.blit(background, (background_x, 0))
-  windowsurface.blit(background, (background_x + background.get_width(), 0))
-  # Afficher le score
-  afficher_score()
-  # Mettre à jour l'affichage
-  pygame.display.flip()
-  # Réguler la vitesse de la boucle
-  clock.tick(FPS)
+    # Afficher le score
+    afficher_score()
 
+    # Mettre à jour l'affichage
+    pygame.display.flip()
 
-#
-#
-#
-def set_difficulty(
-):  # function to progressively increase the speed of the background movement
-  global score
-  global background_speed
-  speed_modification = score // 3
-  background_speed = 3 + speed_modification
+    # Réguler la vitesse de la boucle
+    clock.tick(FPS)
 
-
-#
-#
-#
-pygame.mouse.set_visible(False)
-
-pygame.quit()
-sys.exit()
+# Reste du code...
