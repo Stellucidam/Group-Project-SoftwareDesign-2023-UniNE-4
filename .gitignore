@@ -1,0 +1,7 @@
+.breakpoints
+.cache/
+.config/
+.lesson/
+.replit
+.upm/
+venv/
