@@ -1,58 +1,19 @@
 import pygame
 import sys
 import random
-from PIL import Image, ImageDraw
-from constants import WINDOWWIDTH, WINDOWHEIGHT, FPS, BACKGROUND_SPEED, MISS_SPEED, MISS_HAUTEUR, JUMP_SIZE, GRAVITY, UP_DISTRIBUTION, DOWN_DISTRIBUTION, PATH, BLACK
+from constants import WINDOWWIDTH, WINDOWHEIGHT, BACKGROUND_SPEED, MISS_SPEED, MISS_HAUTEUR, JUMP_SIZE, PATH
+from game import main_game_loop
+from game_window import GameWindow
 from missile import Missiles
 from state import State
 from trump import Trump
 
 # Initialisation de Pygame
 pygame.init()
-windowsurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-pygame.display.set_caption("Run Greta, RUN")
-
-######################
-#accueil
-
-# Charger l'image de fond
-fond = pygame.image.load(PATH + "fond.png") #nouveau
-fond = pygame.transform.scale(fond, (WINDOWWIDTH, WINDOWHEIGHT)) #nouveau
-
-## Charger l'image du bouton "Start"
-#bouton_start = pygame.image.load("bouton_start.png")
-#bouton_start_rect = bouton_start.get_rect()
-#bouton_start_rect.x = (largeur - bouton_start_rect.width) // 2
-#bouton_start_rect.y = hauteur // 2
-
-## Boucle principale de la page d'accueil
-#while True:
-#for event in pygame.event.get():
-#if event.type == pygame.QUIT:
-#pygame.quit()
-#sys.exit()
-#elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-## Vérifier si le bouton "Start" a été cliqué
-#if bouton_start_rect.collidepoint(event.pos):
-## Lancer le jeu ici (remplacez cela par le code de votre jeu)
-#print("Le jeu est lancé !")
-
-# Afficher l'image de fond
-#fenetre.blit(fond, (0, 0))
-
-# Afficher le bouton "Start"
-#fenetre.blit(bouton_start, bouton_start_rect.topleft)
-
-# Mettre à jour l'affichage
-#pygame.display.flip()
-##########################################
+game_window = GameWindow(pygame, "Run Greta, RUN")
 
 # Etat initial
 state = State(0, 0, BACKGROUND_SPEED, MISS_SPEED, False, True, JUMP_SIZE)
-
-# Chargement de l'image de fond
-background = pygame.image.load(PATH + "fond.png")
-background_x = 0
 
 missiles = Missiles(pygame)
 miss = missiles.get_random_missile(random).image
@@ -83,93 +44,47 @@ greta_hitbox.center = greta_rect.center
 #explosion_rect.center = greta_rect.center
 
 # Boucle principale
-clock = pygame.time.Clock()
-running = True
-while running:
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-      running = False
-
-    #running
-    elif event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_SPACE:
-        if not state.jumping:
-          state.set_jumping(True)
-        elif state.double_jump_available:
-          state.set_double_jump_available(False)
-          state.set_jump_count(JUMP_SIZE)
-
-  # Défilement de l'image de fond
-  background_x -= state.background_speed
-  if background_x < -background.get_width():
-    background_x = 0
-
-  #Effacer l'écran
-  windowsurface.fill(BLACK)
-
+while True:
   # Dessiner l'image de fond
-  windowsurface.blit(background, (background_x, 0))
-  windowsurface.blit(background, (background_x + background.get_width(), 0))
+  start_button_rect, exit_button_rect = game_window.draw_home_background()
+  start_game = False
 
-  # Gestion du saut
-  if state.jumping:
-    if state.jump_count >= JUMP_SIZE * -1:
-      neg = 1
-      if state.jump_count < 0:
-        neg = -1
-      greta_rect.y -= (state.jump_count**2) * 0.5 * neg
-      state.set_jump_count(state.jump_count - 1)
+  while not start_game:
+    for event in pygame.event.get():
+      if event.type == pygame.MOUSEBUTTONDOWN:
+        mouse_pos = pygame.mouse.get_pos()
+        # Vérifier si le bouton "Start" a été cliqué
+        if start_button_rect.collidepoint(mouse_pos):
+          start_game = True
+        # Vérifier si le bouton "Exit" a été cliqué
+        elif exit_button_rect.collidepoint(mouse_pos):
+          pygame.mouse.set_visible(False)
+          pygame.quit()
+          sys.exit()
+    mouse_pos = pygame.mouse.get_pos()
+    # Vérifier si le curseur est au-dessus du bouton "Start" ou du bouton "Exit"
+    if start_button_rect.collidepoint(mouse_pos) or exit_button_rect.collidepoint(mouse_pos):
+        pygame.mouse.set_cursor(*pygame.cursors.broken_x)  # Change cursor to pointer
     else:
-      state.set_jumping(False)
-      state.set_jump_count(JUMP_SIZE)
+        pygame.mouse.set_cursor(*pygame.cursors.arrow)  # Change cursor back to default
 
-  # Appliquer la gravité
-  if greta_rect.y < WINDOWHEIGHT - 170:
-    greta_rect.y += GRAVITY
-  else:
-    greta_rect.y = WINDOWHEIGHT - 170
-    state.set_double_jump_available(True)  # Reset double jump availability
+    pygame.display.flip()
 
-  ## Collision et mort de Greta
-  if miss_rect.colliderect(greta_hitbox):
-    #windowsurface.blit(explosion, explosion_rect) #nouveau
-    #clock.tick(10) #nouveau
-    pygame.quit()
-    sys.exit()  # évite une erreur de type "pygame.error: display Surface quit"
+  # Une fois que le bouton de démarrage a été cliqué, le jeu principal commence
+  if start_game:
+    start_game = False
+    pygame.mouse.set_visible(False)
+    main_game_loop(
+      game_window,
+      state,
+      missiles,
+      trump,
+      greta_rect,
+      greta_hitbox,
+      greta_surface,
+      Greta, miss, miss_rect, random)
+    pygame.mouse.set_visible(True)
 
-  #Afficher Trump
-  windowsurface.blit(trump.image, trump.rect)
-
-  #Afficher Greta
-  windowsurface.blit(greta_surface, greta_hitbox, greta_rect)  # à suppr
-  windowsurface.blit(Greta, greta_rect)
-  #Afficher missiles
-  miss_rect.move_ip(-state.missile_speed,0)  #rectangle du missile bouge avec la constante speed
-  if miss_rect.right < 0:
-    miss_rect.x = WINDOWWIDTH
-    miss_rect.y = greta_rect.y + random.randint(UP_DISTRIBUTION, DOWN_DISTRIBUTION)
-    miss = missiles.get_random_missile(random).image
-  windowsurface.blit(miss, miss_rect)
-
-  #test augmenter SCORE
-  state.add_score(1 / FPS)
-  state.set_difficulty()
-  state.add_step()
-
-  # Afficher le score
-  state.print_state(pygame, windowsurface)
-
-  # Mettre à jour l'affichage
-  pygame.display.flip()
-
-  # Réguler la vitesse de la boucle
-  clock.tick(FPS)
-
-#
-pygame.mouse.set_visible(False)
-
-pygame.quit()
-sys.exit()
 
 ####
 #
