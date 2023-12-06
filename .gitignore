@@ -1,0 +1,11 @@
+__pycache__/
+.breakpoints
+.cache/
+.config/
+.lesson/
+.replit
+.upm/
+venv/
+
+.DS_Store
+
