@@ -2,10 +2,10 @@ import pygame
 import sys
 import random
 from PIL import Image, ImageDraw
-from constants import *
-from missile import *
-from state import *
-from trump import *
+from constants import WINDOWWIDTH, WINDOWHEIGHT, FPS, BACKGROUND_SPEED, MISS_SPEED, MISS_HAUTEUR, JUMP_SIZE, GRAVITY, UP_DISTRIBUTION, DOWN_DISTRIBUTION, PATH, BLACK
+from missile import Missiles
+from state import State
+from trump import Trump
 
 # Initialisation de Pygame
 pygame.init()
@@ -15,12 +15,12 @@ pygame.display.set_caption("Run Greta, RUN")
 ######################
 #accueil
 
-## Charger l'image de fond
-#fond = pygame.image.load("fond.png")
-#fond = pygame.transform.scale(fond, (largeur, hauteur))
+# Charger l'image de fond
+fond = pygame.image.load(PATH + "fond.png") #nouveau
+fond = pygame.transform.scale(fond, (WINDOWWIDTH, WINDOWHEIGHT)) #nouveau
 
 ## Charger l'image du bouton "Start"
-#bouton_start = pygame.image.load("chemin/vers/votre/bouton_start.png")
+#bouton_start = pygame.image.load("bouton_start.png")
 #bouton_start_rect = bouton_start.get_rect()
 #bouton_start_rect.x = (largeur - bouton_start_rect.width) // 2
 #bouton_start_rect.y = hauteur // 2
@@ -76,6 +76,12 @@ greta_hitbox = greta_surface.get_rect()
 greta_hitbox.center = greta_rect.center
 #pygame.draw.rect(greta_hitbox, (0, 255, 0), greta_hitbox.get_rect(), 10) # à suppr
 
+##Afficher explosion #nouveau
+#explosion = pygame.image.load(PATH + "explosion.gif")
+#explosion = pygame.transform.scale(explosion, (100, 100))
+#explosion_rect = explosion.get_rect()
+#explosion_rect.center = greta_rect.center
+
 # Boucle principale
 clock = pygame.time.Clock()
 running = True
@@ -122,29 +128,30 @@ while running:
     greta_rect.y += GRAVITY
   else:
     greta_rect.y = WINDOWHEIGHT - 170
-    state.set_double_jump_available(True) # Reset double jump availability
+    state.set_double_jump_available(True)  # Reset double jump availability
 
   ## Collision et mort de Greta
   if miss_rect.colliderect(greta_hitbox):
+    #windowsurface.blit(explosion, explosion_rect) #nouveau
+    #clock.tick(10) #nouveau
     pygame.quit()
-    sys.exit() # évite une erreur de type "pygame.error: display Surface quit"
+    sys.exit()  # évite une erreur de type "pygame.error: display Surface quit"
 
   #Afficher Trump
   windowsurface.blit(trump.image, trump.rect)
 
   #Afficher Greta
-  windowsurface.blit(greta_surface, greta_hitbox, greta_rect)# à suppr
+  windowsurface.blit(greta_surface, greta_hitbox, greta_rect)  # à suppr
   windowsurface.blit(Greta, greta_rect)
   #Afficher missiles
-  miss_rect.move_ip(-state.missile_speed, 0)  #rectangle du missile bouge avec la constante speed
+  miss_rect.move_ip(-state.missile_speed,0)  #rectangle du missile bouge avec la constante speed
   if miss_rect.right < 0:
     miss_rect.x = WINDOWWIDTH
     miss_rect.y = greta_rect.y + random.randint(UP_DISTRIBUTION, DOWN_DISTRIBUTION)
     miss = missiles.get_random_missile(random).image
   windowsurface.blit(miss, miss_rect)
-  
+
   #test augmenter SCORE
-  # SCORE += 1 / FPS
   state.add_score(1 / FPS)
   state.set_difficulty()
   state.add_step()
@@ -163,3 +170,16 @@ pygame.mouse.set_visible(False)
 
 pygame.quit()
 sys.exit()
+
+####
+#
+#ennemi intelligent Al Jabar
+#AlJabar_rect
+#def AlJabar...
+#if difficulté % 3 == 0:
+#if AlJabar_rect.right < WINDOWWIDTH - 30:
+#AlJabar_rect.x = WINDOWWIDTH
+#AlJabar_rect.y = greta_rect.y
+#else:
+#AlJabar_rect.y = AlJabar_rect.y
+
