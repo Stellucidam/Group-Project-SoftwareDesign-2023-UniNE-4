@@ -64,9 +64,9 @@ while True:
     mouse_pos = pygame.mouse.get_pos()
     # Vérifier si le curseur est au-dessus du bouton "Start" ou du bouton "Exit"
     if start_button_rect.collidepoint(mouse_pos) or exit_button_rect.collidepoint(mouse_pos):
-        pygame.mouse.set_cursor(*pygame.cursors.broken_x)  # Change cursor to pointer
+      pygame.mouse.set_cursor(*pygame.cursors.broken_x)  # Change cursor to pointer
     else:
-        pygame.mouse.set_cursor(*pygame.cursors.arrow)  # Change cursor back to default
+      pygame.mouse.set_cursor(*pygame.cursors.arrow)  # Change cursor back to default
 
     pygame.display.flip()
 

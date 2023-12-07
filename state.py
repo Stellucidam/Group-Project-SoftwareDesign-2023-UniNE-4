@@ -28,9 +28,6 @@ class State:
     def add_step(self):
         """
         Ajoute 1 au nombre de pas effectués par le joueur.
-        
-        Args:
-            step (int): Le nombre de pas effectués par le joueur.
         """
         self.step += 1
 
