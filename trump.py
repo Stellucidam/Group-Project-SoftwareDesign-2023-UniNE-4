@@ -1,6 +1,7 @@
 from constants import PATH
 
 class Trump:
+    default_width, default_height = 133, 100
     def __init__(self, pygame, image_name, width, height, x_pos, y_pos):
         self.image_name = image_name
         self.width = width
@@ -11,7 +12,7 @@ class Trump:
         trump_image = pygame.image.load(PATH + self.image_name)
         trump_image = pygame.transform.scale(trump_image, (self.width, self.height))
         trump_rect = trump_image.get_rect()
-        trump_rect.topright = (self.x_pos, self.y_pos)
+        trump_rect.topleft = (self.x_pos, self.y_pos)
 
         self.image = trump_image
         self.rect = trump_rect

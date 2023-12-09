@@ -34,7 +34,7 @@ def main_game_loop(game_window: GameWindow, state: State, missiles, trump, greta
 
     # Gestion du saut
     if state.jumping:
-      if state.jump_count >= JUMP_SIZE * -1:
+      if state.jump_count <= JUMP_SIZE:
         neg = 1
         if state.jump_count < 0:
           neg = -1
@@ -75,7 +75,6 @@ def main_game_loop(game_window: GameWindow, state: State, missiles, trump, greta
     # test augmenter SCORE
     state.add_score(1 / FPS)
     state.set_difficulty()
-    state.add_step()
 
     # Afficher le score
     state.print_state(game_window.pygame, game_window.window_surface)

@@ -13,9 +13,7 @@ class Missiles:
     def __init__(self, pygame):
         self.missiles = []
         for filename in MISSILE_FILE_NAMES:
-            missile = Missile(pygame, filename, MISS_LONGUEUR, MISS_HAUTEUR)
-            # self.missiles.append(missile.get_image(pygame))
-            # self.images.append(missile.get_image(pygame))
+            missile = Missile(pygame, filename, MISSILE_WIDTH, MISSILE_HEIGHT)
             self.missiles.append(missile)
 
     def get_missiles(self):

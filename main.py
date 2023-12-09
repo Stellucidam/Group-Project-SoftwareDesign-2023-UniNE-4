@@ -1,7 +1,7 @@
 import pygame
 import sys
 import random
-from constants import WINDOWWIDTH, WINDOWHEIGHT, BACKGROUND_SPEED, MISS_SPEED, MISS_HAUTEUR, JUMP_SIZE, PATH
+from constants import MARGIN, WINDOWWIDTH, WINDOWHEIGHT, BACKGROUND_SPEED, MISS_SPEED, MISSILE_HEIGHT, JUMP_SIZE, PATH
 from game import main_game_loop
 from game_window import GameWindow
 from missile import Missiles
@@ -13,18 +13,18 @@ pygame.init()
 game_window = GameWindow(pygame, "Run Greta, RUN")
 
 # Etat initial
-state = State(0, 0, BACKGROUND_SPEED, MISS_SPEED, False, True, JUMP_SIZE)
+state = State(0, BACKGROUND_SPEED, MISS_SPEED, False, True, JUMP_SIZE)
 
-missiles = Missiles(pygame)
+missiles = Missiles(game_window.pygame)
 miss = missiles.get_random_missile(random).image
 miss_rect = miss.get_rect()
 
 #Initialiser la position du missile comme çA on sait de quoi on parle
 miss_rect.x = WINDOWWIDTH
-miss_rect.y = random.randint(0, WINDOWHEIGHT - MISS_HAUTEUR)
+miss_rect.y = random.randint(0, WINDOWHEIGHT - MISSILE_HEIGHT)
 
 # Afficher Trump
-trump = Trump(pygame, "trump.png", 133, 100, WINDOWWIDTH - 40, 10)
+trump = Trump(pygame, "trump.png", Trump.default_width, Trump.default_height, WINDOWWIDTH - Trump.default_width - MARGIN, MARGIN)
 
 #Afficher Greta
 Greta = pygame.image.load(PATH + "Greta.png")
@@ -47,12 +47,13 @@ greta_hitbox.center = greta_rect.center
 while True:
   # Dessiner l'image de fond
   start_button_rect, exit_button_rect = game_window.draw_home_background()
+  game_window.pygame.display.flip()
   start_game = False
 
   while not start_game:
+    mouse_pos = pygame.mouse.get_pos()
     for event in pygame.event.get():
       if event.type == pygame.MOUSEBUTTONDOWN:
-        mouse_pos = pygame.mouse.get_pos()
         # Vérifier si le bouton "Start" a été cliqué
         if start_button_rect.collidepoint(mouse_pos):
           start_game = True
@@ -61,14 +62,11 @@ while True:
           pygame.mouse.set_visible(False)
           pygame.quit()
           sys.exit()
-    mouse_pos = pygame.mouse.get_pos()
     # Vérifier si le curseur est au-dessus du bouton "Start" ou du bouton "Exit"
     if start_button_rect.collidepoint(mouse_pos) or exit_button_rect.collidepoint(mouse_pos):
       pygame.mouse.set_cursor(*pygame.cursors.broken_x)  # Change cursor to pointer
     else:
       pygame.mouse.set_cursor(*pygame.cursors.arrow)  # Change cursor back to default
-
-    pygame.display.flip()
 
   # Une fois que le bouton de démarrage a été cliqué, le jeu principal commence
   if start_game:
