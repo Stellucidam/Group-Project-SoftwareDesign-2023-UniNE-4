@@ -1,13 +1,9 @@
-from constants import *
+from constants import MISSILE_FILE_NAMES, MISSILE_HEIGHT, MISSILE_WIDTH
+from super_element import SuperElement
 
-class Missile:
+class Missile(SuperElement):
     def __init__(self, pygame, image_name, width, height):
-        self.image_name = image_name
-        self.width = width
-        self.height = height
-        missile_image = pygame.image.load(PATH + self.image_name)
-        missile_image = pygame.transform.scale(missile_image, (self.width, self.height))
-        self.image = missile_image
+        super().__init__(pygame, image_name, width, height)
 
 class Missiles:
     def __init__(self, pygame):

@@ -1,4 +1,4 @@
-from constants import BASE_SPEED, GREEN, MARGIN, POINTS_PER_LEVEL, WHITE
+from constants import BASE_SPEED, GREEN, MARGIN, POINTS_PER_LEVEL
 
 class State:
     # Initialisation de l'état du jeu (score, vitesse, etc.)

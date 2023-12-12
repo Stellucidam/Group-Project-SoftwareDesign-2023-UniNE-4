@@ -34,7 +34,7 @@ def main_game_loop(game_window: GameWindow, state: State, missiles, trump, greta
 
     # Gestion du saut
     if state.jumping:
-      if state.jump_count <= JUMP_SIZE:
+      if state.jump_count >= JUMP_SIZE * -1:
         neg = 1
         if state.jump_count < 0:
           neg = -1
@@ -52,24 +52,24 @@ def main_game_loop(game_window: GameWindow, state: State, missiles, trump, greta
       state.set_double_jump_available(True)  # Reset double jump availability
 
     # Collision et mort de Greta
-    if miss_rect.colliderect(greta_hitbox):
-      # windowsurface.blit(explosion, explosion_rect) #nouveau
-      # clock.tick(10) #nouveau
-      # pygame.quit()
+    if miss_rect.colliderect(greta_rect):
       return
 
     # Afficher Trump
-    game_window.window_surface.blit(trump.image, trump.rect)
+    game_window.window_surface.blit(trump.image, trump.image_rect)
 
     #Afficher Greta
     game_window.window_surface.blit(greta_surface, greta_hitbox, greta_rect)  # à suppr
     game_window.window_surface.blit(Greta, greta_rect)
+    Greta.fill(BLACK)  # à suppr
+    miss.fill(BLACK)  # à suppr
     # Afficher missiles
-    miss_rect.move_ip(-state.missile_speed,0)  #rectangle du missile bouge avec la constante speed
+    miss_rect.move_ip(-state.missile_speed, 0)  #rectangle du missile bouge avec la constante speed
     if miss_rect.right < 0:
       miss_rect.x = WINDOWWIDTH
       miss_rect.y = greta_rect.y + random.randint(UP_DISTRIBUTION, DOWN_DISTRIBUTION)
       miss = missiles.get_random_missile(random).image
+      miss_rect = miss.get_rect()
     game_window.window_surface.blit(miss, miss_rect)
 
     # test augmenter SCORE
