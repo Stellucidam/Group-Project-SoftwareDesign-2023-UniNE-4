@@ -5,6 +5,7 @@ from constants import WINDOWWIDTH, WINDOWHEIGHT, BACKGROUND_SPEED, MISS_SPEED, M
 from game import main_game_loop
 from game_window import GameWindow
 from missile import Missiles
+from al_jaber import AlJaber
 from state import State
 from trump import Trump
 from greta import Greta
@@ -16,18 +17,21 @@ def init_state():
 
   # Etat initial
   state = State(0, BACKGROUND_SPEED, MISS_SPEED, False, True, JUMP_SIZE)
-
+  # Créer missiles
   missiles = Missiles(game_window.pygame)
 
-  # Afficher Trump
+  # Créer Trump
   trump = Trump(pygame)
 
-  # Afficher Greta
+  # Créer Greta
   greta = Greta(pygame)
-  return game_window, state, missiles, trump, greta
+
+  # Créer AlJabar
+  al_jaber = AlJaber(pygame, greta.y_pos)
+  return game_window, state, missiles, trump, greta, al_jaber
 
   
-game_window, state, missiles, trump, greta = init_state()
+game_window, state, missiles, trump, greta, al_jaber = init_state()
 
 # Boucle principale
 while True:
@@ -64,6 +68,6 @@ while True:
     start_game = False  # Permet de revenir à la page d'accueil et ne pas boucler à l'infini
     pygame.mouse.set_visible(False)  # Faire diparaître la souris
     main_game_loop(  #mettre en argument ce qu'elle a besoin pour tourner
-      game_window, state, missiles, trump, greta, random)
+      game_window, state, missiles, al_jaber, trump, greta, random)
     pygame.mouse.set_visible(True)  # Si le joueur perd, la souris réaparait
-    game_window, state, missiles, trump, greta = init_state() # Réinitialiser les variables
+    game_window, state, missiles, trump, greta, al_jaber = init_state() # Réinitialiser les variables

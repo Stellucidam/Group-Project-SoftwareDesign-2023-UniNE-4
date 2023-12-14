@@ -29,19 +29,19 @@ class GameWindow:  # Gère l'affichage du jeu
 
     # Créer le bouton de démarrage
     start_button = self.pygame.image.load(PATH + "bouton_start.png")
-    start_button = self.pygame.transform.scale(start_button, (155, 84))
+    start_button = self.pygame.transform.scale(start_button, (474/2, 158/2))
     start_button_rect = start_button.get_rect()
 
     # Créer le bouton de sortie
     exit_button = self.pygame.image.load(PATH + "exit.png")
-    exit_button = self.pygame.transform.scale(exit_button, (80, 80))
+    exit_button = self.pygame.transform.scale(exit_button, (340/2, 130/2))
     exit_button_rect = exit_button.get_rect()
 
     # Centrer le bouton de démarrage et le bouton de sortie
     start_button_rect.center = (self.window_surface.get_width() / 2,
                                 self.window_surface.get_height() / 2)
     exit_button_rect.center = (self.window_surface.get_width() / 2,
-                               (self.window_surface.get_height() / 2) - 100)
+                               (self.window_surface.get_height() / 2) + 100)
 
     # Afficher le bouton de démarrage et le bouton de sortie
     self.window_surface.blit(

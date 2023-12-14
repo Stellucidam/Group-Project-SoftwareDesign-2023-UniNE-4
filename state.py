@@ -1,19 +1,23 @@
-from constants import BASE_SPEED, POINTS_PER_LEVEL, GREEN, MARGIN
+from constants import BASE_SPEED, FPS, POINTS_PER_LEVEL, GREEN, MARGIN
 
 
 class State:
   # Initialisation de l'état du jeu (score, vitesse, etc.) nombre de fois qu'on passe dans la loop
   def __init__(self, score, background_speed, missile_speed, jumping,
                double_jump_available, jump_count):
+    self.step = 1
     self.score = score
     self.background_speed = background_speed
     self.missile_speed = missile_speed
     self.jumping = jumping
     self.double_jump_available = double_jump_available
     self.jump_count = jump_count
+    self.al_jaber = False
 
-  def add_score(self, amount):
-    self.score += amount
+  def next_step(self): # Clarisse
+    self.step += 1
+    if (self.step % FPS == 0):
+      self.score += 1
 
   def set_jumping(self, jumping):
     self.jumping = jumping
@@ -27,26 +31,26 @@ class State:
 # Accélérer l'image
 
   def set_difficulty(self):
+    new_level = self.step % (POINTS_PER_LEVEL * FPS) == 0
     speed_modification = self.score // POINTS_PER_LEVEL  #augmente de 1 tous les 5 scores
-    if self.background_speed < 10:
+    
+    if new_level:
+      self.missile_speed = BASE_SPEED * 2 + speed_modification
       self.background_speed = BASE_SPEED + speed_modification
-    if self.missile_speed < 20:
-      self.missile_speed += speed_modification
-
+    return self.step % (POINTS_PER_LEVEL * FPS * 2) == 0
 
 # Fonction pour afficher le score
 
   def print_state(self, pygame, windowsurface):
     font = pygame.font.Font(None, 36)  # Police et taille du texte
 
-    texte_score = font.render("Score : {}".format(int(self.score)), True,
-                              GREEN)
+    # texte_score = font.render("Score : {}".format(int(self.score)), True, GREEN)
     texte_level = font.render(
-      "Niveau: {}".format(int(self.background_speed - BASE_SPEED)), True,
+      "Niveau: {}".format(int(self.score / POINTS_PER_LEVEL) + 1), True,
       GREEN)
 
     # Puis, quand vous dessinez le texte :
-    windowsurface.blit(texte_score, (MARGIN * 3, MARGIN))
-    windowsurface.blit(texte_level,
-                       (MARGIN * 3, MARGIN * 2 + texte_score.get_height()))
+    # windowsurface.blit(texte_score, (MARGIN * 3, MARGIN))
+    windowsurface.blit(texte_level, (MARGIN * 3, MARGIN))
+                      #  (MARGIN * 3, MARGIN * 2 + texte_score.get_height()))
     

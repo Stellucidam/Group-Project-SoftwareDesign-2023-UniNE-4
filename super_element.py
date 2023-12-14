@@ -1,4 +1,4 @@
-from pygame import Rect, Surface
+# from pygame import Rect, Surface
 from constants import PATH
 
 
@@ -14,7 +14,9 @@ class SuperElement:
     image = pygame.image.load(PATH + self.image_name)
     image = pygame.transform.scale(image, (self.width, self.height))
 
-    self.image: Surface = image
-    self.rect: Rect = image.get_rect()
+    self.image = image
+    # self.image: Surface = image
+    self.rect = image.get_rect()
+    #self.rect: Rect = image.get_rect()
     self.rect.x = self.x_pos
     self.rect.y = self.y_pos

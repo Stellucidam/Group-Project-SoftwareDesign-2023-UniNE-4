@@ -3,19 +3,15 @@ from game_window import GameWindow
 from greta import Greta
 from missile import Missiles
 from state import State
-from constants import BLACK, DOWN_DISTRIBUTION, FPS, GRAVITY, JUMP_SIZE, PATH, UP_DISTRIBUTION, WINDOWHEIGHT, WINDOWWIDTH
+from constants import BASE_SPEED, BLACK, DOWN_DISTRIBUTION, FPS, GRAVITY, JUMP_SIZE, PATH, UP_DISTRIBUTION, WINDOWHEIGHT, WINDOWWIDTH
 from super_element import SuperElement
 from trump import Trump
+from al_jaber import AlJaber
 
 
-def main_game_loop(
-  game_window: GameWindow,
-  state: State,
-  missiles: Missiles,
-  trump: Trump,
-  greta: Greta,
-  random):
-  
+def main_game_loop(game_window: GameWindow, state: State, missiles: Missiles,
+                   al_jaber: AlJaber, trump: Trump, greta: Greta, random):
+
   current_missile = missiles.get_random_missile(random)
   clock = game_window.pygame.time.Clock()
   running = True
@@ -61,7 +57,7 @@ def main_game_loop(
       else:
         state.set_jumping(False)
         state.set_jump_count(JUMP_SIZE)
-    
+
     greta.apply_gravity(state)
 
     # Afficher Trump
@@ -71,31 +67,37 @@ def main_game_loop(
     state.print_state(game_window.pygame, game_window.window_surface)
 
     # Collision et mort de Greta
-    if current_missile.get_collision_rect(game_window.pygame).colliderect(greta.get_collision_rect(game_window.pygame)):
-      explosion = SuperElement(game_window.pygame, "explosion.png", greta.width, greta.height, greta.rect.x, greta.rect.y)
+    if current_missile.get_collision_rect(game_window.pygame).colliderect(
+        greta.get_collision_rect(game_window.pygame)):
+      explosion = SuperElement(game_window.pygame, "explosion.png",
+                               greta.width, greta.height, greta.rect.x,
+                               greta.rect.y)
       game_window.window_surface.blit(explosion.image, explosion.rect.topleft)
       game_window.pygame.display.flip()
-      
-      clock.tick(10) #nouveau
-      time.sleep(3) #nouveau
+
+      clock.tick(10)  #nouveau
+      time.sleep(3)  #nouveau
       return
 
     #Afficher Greta
     game_window.window_surface.blit(greta.image, greta.rect)
+
+    # Bouger les missiles
+    missiles.move(current_missile, state.missile_speed, greta.rect.y, random)
     
     # Afficher missiles
-    current_missile.rect.move_ip(-state.missile_speed,
-                      0)  #rectangle du missile bouge avec la constante speed
-    if current_missile.rect.right < 0:
-      current_missile.rect.x = WINDOWWIDTH
-      current_missile.rect.y = greta.rect.y + random.randint(UP_DISTRIBUTION,
-                                                  DOWN_DISTRIBUTION)
-      current_missile = missiles.get_random_missile(random)
-    game_window.window_surface.blit(current_missile.image, current_missile.rect)
+    game_window.window_surface.blit(current_missile.image,
+                                    current_missile.rect)
+
+    if state.al_jaber:
+      state.al_jaber = not al_jaber.behaviour(greta.y_pos, state.missile_speed)
+      # Afficher AlJabar
+    game_window.window_surface.blit(al_jaber.image, al_jaber.rect)
 
     # test augmenter SCORE
-    state.add_score(1 / FPS)
-    state.set_difficulty()
+    state.next_step()
+    if(state.set_difficulty()):
+      state.al_jaber = True
 
     # Mettre à jour l'affichage
     game_window.pygame.display.flip()
