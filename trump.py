@@ -1,6 +1,9 @@
-from super_person import SuperPerson
+from constants import MARGIN, TRUMP_HEIGHT, TRUMP_WIDTH, WINDOWWIDTH
+from super_element import SuperElement
 
-class Trump(SuperPerson):
-    default_width, default_height = 133, 100
-    def __init__(self, pygame, image_name, width, height, x_pos, y_pos):
-        super().__init__(pygame, image_name, width, height, x_pos, y_pos)
+
+class Trump(SuperElement):
+  def __init__(self, pygame):
+    super().__init__( pygame, "trump.png", TRUMP_WIDTH, TRUMP_HEIGHT,
+              WINDOWWIDTH - TRUMP_WIDTH - MARGIN, MARGIN)
+    
