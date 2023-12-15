@@ -1,7 +1,11 @@
+# We planned to make a game that comes from Jetpack Joyride. We wanted to make it funnier so we came up with the Trump-Greta rivality. Like in JJ we only have one life so we made Greta small. Because replit sometimes has a hard time figuring out heavy code we decided to be permissive with Greta hait for example to avoid the frustrating effect of "It lagged and then touch my hair and I lost".
+# In the code structure it seems easier to split as much as needed. That's why we have all these files (constants.py, greta.py, etc.). We just import them in softwaredesign-project.py.
+# We also have a friend who's use to code and she helped us a lot. Her name is Clarisse. When her name is mentioned is because she helped us on the line.
+
 import pygame
 import sys
 import random
-from constants import WINDOWWIDTH, WINDOWHEIGHT, BACKGROUND_SPEED, MISS_SPEED, MISS_HEIGHT, JUMP_SIZE, PATH, GRETA_WIDTH, GRETA_HEIGHT, TRUMP_WIDTH, TRUMP_HEIGHT, MARGIN
+from constants import BACKGROUND_SPEED, MISS_SPEED, JUMP_SIZE
 from game import main_game_loop
 from game_window import GameWindow
 from missile import Missiles
@@ -10,64 +14,77 @@ from state import State
 from trump import Trump
 from greta import Greta
 
-def init_state():
-  # Initialisation de Pygame
-  pygame.init()
-  game_window = GameWindow(pygame, "Run Greta, RUN")  # Exécute la partie __init__ de la class GameWindow
 
-  # Etat initial
+def init_state():
+  # Initializing Pygame
+  pygame.init()
+  game_window = GameWindow(pygame, "Run Greta, RUN")
+
+  # Initial state
   state = State(0, BACKGROUND_SPEED, MISS_SPEED, False, True, JUMP_SIZE)
-  # Créer missiles
+  # Create missiles
   missiles = Missiles(game_window.pygame)
 
-  # Créer Trump
+  # Create Trump
   trump = Trump(pygame)
 
-  # Créer Greta
+  # Create Greta
   greta = Greta(pygame)
 
-  # Créer AlJabar
+  # Create AlJabar
   al_jaber = AlJaber(pygame, greta.y_pos)
+  
+  state.init_music(game_window.pygame, "OST.mp3")
+
   return game_window, state, missiles, trump, greta, al_jaber
 
-  
+
 game_window, state, missiles, trump, greta, al_jaber = init_state()
 
-# Boucle principale
+# Main loop
 while True:
-  # Dessiner page d'accueil
-  start_button_rect, exit_button_rect = game_window.draw_home_background(
-  )  # Appelle: utilise ligne 22 de la class WindowSurface
+
+  # Draw home page
+  start_button_rect, exit_button_rect = game_window.draw_home_background()
+
+  # Refresh the display
   game_window.pygame.display.flip()
   start_game = False
 
+  # On the home screen, we check whether the player clicks on the "Strat" button = start the game, or on the "Exit" button = quit the game.
   while not start_game:
-    mouse_pos = pygame.mouse.get_pos()  # Récupérer position de la souris
+    mouse_pos = pygame.mouse.get_pos()
     for event in pygame.event.get():
       if event.type == pygame.MOUSEBUTTONDOWN:
-        # Vérifier si le bouton "Start" a été cliqué
-        if start_button_rect.collidepoint(
-            mouse_pos):  # Collision souris et bouton start
+        if start_button_rect.collidepoint(mouse_pos):
           start_game = True
-        # Vérifier si le bouton "Exit" a été cliqué
         elif exit_button_rect.collidepoint(mouse_pos):
           pygame.mouse.set_visible(False)
           pygame.quit()
           sys.exit()
-    # Vérifier si le curseur est au-dessus du bouton "Start" ou du bouton "Exit"
+
+    # If the mouse is on a useful button it becomes a cross to show the user it can be clicked
     if start_button_rect.collidepoint(
         mouse_pos) or exit_button_rect.collidepoint(mouse_pos):
-      pygame.mouse.set_cursor(
-        *pygame.cursors.broken_x)  # Change cursor to pointer
+      pygame.mouse.set_cursor(*pygame.cursors.broken_x)
     else:
-      pygame.mouse.set_cursor(
-        *pygame.cursors.arrow)  # Change cursor back to default
-
-# Une fois que le bouton de démarrage a été cliqué, le jeu principal commence
+      pygame.mouse.set_cursor(*pygame.cursors.arrow)
+      
+  # When the start button is clicked, the game starts
   if start_game:
-    start_game = False  # Permet de revenir à la page d'accueil et ne pas boucler à l'infini
-    pygame.mouse.set_visible(False)  # Faire diparaître la souris
-    main_game_loop(  #mettre en argument ce qu'elle a besoin pour tourner
-      game_window, state, missiles, al_jaber, trump, greta, random)
-    pygame.mouse.set_visible(True)  # Si le joueur perd, la souris réaparait
-    game_window, state, missiles, trump, greta, al_jaber = init_state() # Réinitialiser les variables
+    state.play_music(game_window.pygame)
+    
+    # Clarisse advised us to make sure that the game doesn't go round and round.
+    start_game = False
+    
+    # Hide the mouse when the game starts
+    pygame.mouse.set_visible(False)
+    main_game_loop(game_window, state, missiles, trump, greta, al_jaber,
+                   random)
+    state.stop_music(game_window.pygame)
+
+    # Make the mouse visible again when the player loses
+    pygame.mouse.set_visible(True)
+
+    # Reset variables to initial state
+    game_window, state, missiles, trump, greta, al_jaber = init_state()

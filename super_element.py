@@ -1,4 +1,5 @@
-# from pygame import Rect, Surface
+# The superclass, SuperElement is here to define all the elements we have to use for the sub-class element such as Trump, Greta, Missile and AlJabar
+
 from constants import PATH
 
 
@@ -15,8 +16,6 @@ class SuperElement:
     image = pygame.transform.scale(image, (self.width, self.height))
 
     self.image = image
-    # self.image: Surface = image
     self.rect = image.get_rect()
-    #self.rect: Rect = image.get_rect()
     self.rect.x = self.x_pos
     self.rect.y = self.y_pos
